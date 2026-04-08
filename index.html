@@ -1,121 +1,1140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>AmazX | CupX Corporation</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AmazX – CupX Shopping</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
-* {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Ember:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Bitter:wght@400;600;700&display=swap');
+
+:root {
+  --amz-orange: #FF9900;
+  --amz-orange-dark: #E47911;
+  --amz-navy: #131921;
+  --amz-navy-light: #232F3E;
+  --amz-blue: #37475A;
+  --amz-link: #007185;
+  --amz-link-hover: #C7511F;
+  --amz-yellow: #FFD814;
+  --amz-yellow-dark: #F7CA00;
+  --amz-red: #B12704;
+  --amz-green: #007600;
+  --amz-bg: #EAEDED;
+  --amz-surface: #FFFFFF;
+  --amz-border: #DDD;
+  --amz-text: #0F1111;
+  --amz-muted: #565959;
+  --amz-star: #FF9900;
 }
 
-body {
-background: #0b0b0f;
-color: white;
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-text-align: center;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--amz-bg);color:var(--amz-text);min-height:100vh;font-size:14px;}
 
-.container {
-max-width: 600px;
-padding: 20px;
-}
+/* ── HEADER ── */
+.header{background:var(--amz-navy);color:white;position:sticky;top:0;z-index:200;}
+.header-top{display:flex;align-items:center;gap:8px;padding:8px 12px;height:60px;}
 
-.logo {
-font-size: 42px;
-font-weight: 700;
-letter-spacing: 1px;
-}
+/* AmazX Logo SVG */
+.amazx-logo{display:flex;flex-direction:column;align-items:flex-start;cursor:pointer;flex-shrink:0;padding:4px 8px;border:1.5px solid transparent;border-radius:3px;}
+.amazx-logo:hover{border-color:white;}
+.amazx-logo-text{font-family:'Bitter',serif;font-size:22px;font-weight:700;color:white;letter-spacing:-0.5px;line-height:1;}
+.amazx-logo-arrow{display:flex;align-items:center;gap:0;}
 
-.logo span {
-color: #00f7ff;
-}
+.header-deliver{flex-shrink:0;padding:4px 8px;border:1.5px solid transparent;border-radius:3px;cursor:pointer;font-size:12px;line-height:1.3;}
+.header-deliver:hover{border-color:white;}
+.header-deliver-sub{color:#CCC;font-size:11px;}
+.header-deliver-main{font-weight:700;font-size:13px;}
 
-.tagline {
-margin-top: 10px;
-color: #aaa;
-font-size: 16px;
-}
+.search-bar{flex:1;display:flex;height:40px;border-radius:4px;overflow:hidden;}
+.search-cat{background:#F3F3F3;border:none;border-right:1px solid #CCC;padding:0 8px;font-size:12px;color:#555;cursor:pointer;font-family:'Nunito',sans-serif;min-width:50px;}
+.search-input{flex:1;border:none;outline:none;padding:0 12px;font-size:15px;font-family:'Nunito',sans-serif;}
+.search-btn{background:var(--amz-orange);border:none;padding:0 14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.search-btn:hover{background:var(--amz-orange-dark);}
 
-.title {
-margin-top: 40px;
-font-size: 36px;
-font-weight: 600;
-}
+.header-account{flex-shrink:0;padding:4px 8px;border:1.5px solid transparent;border-radius:3px;cursor:pointer;font-size:12px;line-height:1.4;}
+.header-account:hover{border-color:white;}
+.header-account-sub{color:#CCC;font-size:11px;}
+.header-account-main{font-weight:700;font-size:13px;}
 
-.subtitle {
-margin-top: 15px;
-color: #bbb;
-line-height: 1.6;
-}
+.header-orders{flex-shrink:0;padding:4px 8px;border:1.5px solid transparent;border-radius:3px;cursor:pointer;font-size:12px;line-height:1.4;display:flex;flex-direction:column;}
+.header-orders:hover{border-color:white;}
 
-.btn {
-margin-top: 30px;
-display: inline-block;
-padding: 12px 24px;
-background: #00f7ff;
-color: black;
-text-decoration: none;
-border-radius: 8px;
-font-weight: 600;
-transition: 0.2s ease;
-}
+.header-cart{flex-shrink:0;padding:4px 8px;border:1.5px solid transparent;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:4px;}
+.header-cart:hover{border-color:white;}
+.cart-count{background:var(--amz-orange);color:white;font-size:13px;font-weight:700;min-width:20px;text-align:center;border-radius:2px;padding:0 3px;}
+.cart-label{font-size:13px;font-weight:700;}
 
-.btn:hover {
-background: #00cdd4;
-}
+.header-nav{background:var(--amz-navy-light);padding:0 12px;display:flex;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.header-nav::-webkit-scrollbar{display:none;}
+.nav-item{color:white;font-size:13px;font-weight:600;padding:8px 12px;white-space:nowrap;cursor:pointer;border:1.5px solid transparent;border-radius:3px;transition:border-color .15s;}
+.nav-item:hover{border-color:white;}
+.nav-item.active{border-color:white;}
 
-.footer {
-position: absolute;
-bottom: 20px;
-width: 100%;
-text-align: center;
-color: #666;
-font-size: 14px;
-}
+/* ── PAGES ── */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── SIGNIN ── */
+#signinPage{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px;min-height:calc(100vh - 60px);}
+.signin-logo-big{font-family:'Bitter',serif;font-size:36px;font-weight:700;color:var(--amz-navy);text-align:center;margin:16px 0;}
+
+.signin-box{background:white;border:1px solid var(--amz-border);border-radius:8px;padding:24px 22px;width:100%;max-width:360px;}
+.signin-box h2{font-size:22px;font-weight:700;margin-bottom:18px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:4px;}
+.form-input{width:100%;height:42px;padding:0 12px;border:1.5px solid #888;border-radius:4px;font-size:14px;font-family:'Nunito',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;}
+.form-input:focus{border-color:#E77600;box-shadow:0 0 0 3px rgba(231,118,0,.25);}
+.pass-wrap{position:relative;}
+.pass-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:12px;font-weight:700;color:var(--amz-link);font-family:'Nunito',sans-serif;}
+
+.btn-amz-yellow{width:100%;height:38px;background:linear-gradient(to bottom,#FFE033,#F0C14B);border:1px solid #A88734;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--amz-text);}
+.btn-amz-yellow:hover{background:linear-gradient(to bottom,#F7D929,#E8B42A);}
+.btn-amz-yellow:disabled{opacity:.6;cursor:not-allowed;}
+
+.btn-amz-orange{width:100%;height:38px;background:linear-gradient(to bottom,#F7DFA5,#F0C14B);border:1px solid #A88734;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--amz-text);margin-top:10px;}
+
+.divider-or{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--amz-muted);font-size:13px;}
+.divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--amz-border);}
+
+.signin-new-link{font-size:13px;color:var(--amz-link);cursor:pointer;text-decoration:none;}
+.signin-new-link:hover{color:var(--amz-link-hover);text-decoration:underline;}
+.err-msg{color:var(--amz-red);font-size:13px;margin-bottom:10px;min-height:16px;}
+
+/* ── HOME ── */
+#homePage{}
+
+/* Hero Banner */
+.hero-banner{background:linear-gradient(135deg,#131921 0%,#232F3E 60%,#37475A 100%);color:white;padding:28px 16px;text-align:center;position:relative;overflow:hidden;}
+.hero-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,153,0,.1);}
+.hero-banner::after{content:'';position:absolute;bottom:-40px;left:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,153,0,.07);}
+.hero-title{font-family:'Bitter',serif;font-size:28px;font-weight:700;margin-bottom:6px;position:relative;}
+.hero-sub{font-size:14px;color:#CCC;margin-bottom:18px;position:relative;}
+.hero-search-big{display:flex;max-width:500px;margin:0 auto;border-radius:6px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.3);position:relative;}
+.hero-search-input{flex:1;border:none;outline:none;padding:0 14px;font-size:16px;font-family:'Nunito',sans-serif;height:48px;}
+.hero-search-btn{background:var(--amz-orange);border:none;padding:0 20px;cursor:pointer;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;color:white;transition:background .15s;}
+.hero-search-btn:hover{background:var(--amz-orange-dark);}
+
+/* Category pills */
+.category-strip{background:white;padding:12px 12px;display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:1px solid var(--amz-border);}
+.category-strip::-webkit-scrollbar{display:none;}
+.cat-pill{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--amz-border);background:white;color:var(--amz-text);white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.cat-pill:hover{border-color:var(--amz-orange);color:var(--amz-orange);}
+.cat-pill.active{background:var(--amz-navy);color:white;border-color:var(--amz-navy);}
+
+/* Section */
+.home-section{background:white;margin:8px 8px;border-radius:4px;padding:14px 12px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-head h3{font-family:'Bitter',serif;font-size:18px;font-weight:700;}
+.section-see-all{color:var(--amz-link);font-size:13px;cursor:pointer;font-weight:600;}
+.section-see-all:hover{color:var(--amz-link-hover);text-decoration:underline;}
+
+/* Product Grid */
+.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:480px){.product-grid{grid-template-columns:repeat(3,1fr);}}
+
+.prod-card{background:white;border:1px solid #DDD;border-radius:6px;overflow:hidden;cursor:pointer;transition:box-shadow .15s;display:flex;flex-direction:column;}
+.prod-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);}
+.prod-img{width:100%;aspect-ratio:1;object-fit:cover;background:#F3F3F3;display:flex;align-items:center;justify-content:center;font-size:48px;}
+.prod-img img{width:100%;height:100%;object-fit:contain;}
+.prod-body{padding:10px;flex:1;display:flex;flex-direction:column;}
+.prod-name{font-size:13px;font-weight:600;color:var(--amz-text);line-height:1.4;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.prod-stars{color:var(--amz-star);font-size:13px;margin-bottom:3px;}
+.prod-price{font-size:16px;font-weight:700;color:var(--amz-text);margin-bottom:2px;}
+.prod-price-orig{font-size:12px;color:var(--amz-muted);text-decoration:line-through;}
+.prod-badge{display:inline-block;background:var(--amz-red);color:white;font-size:11px;font-weight:700;padding:2px 6px;border-radius:3px;margin-bottom:4px;}
+.prod-stock-low{font-size:12px;color:var(--amz-red);font-weight:600;}
+.prod-add-btn{margin-top:auto;padding-top:8px;}
+
+.btn-add-cart{width:100%;height:32px;background:linear-gradient(to bottom,#FFE033,#F0C14B);border:1px solid #A88734;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .15s;}
+.btn-add-cart:hover{background:linear-gradient(to bottom,#F7D929,#E8B42A);}
+
+/* Horizontal scroll row */
+.prod-row{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;}
+.prod-row::-webkit-scrollbar{display:none;}
+.prod-row .prod-card{min-width:150px;max-width:150px;flex-shrink:0;}
+
+/* Category grid */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.cat-card{background:var(--amz-bg);border-radius:6px;padding:14px 10px;text-align:center;cursor:pointer;transition:background .15s,box-shadow .15s;border:1px solid transparent;}
+.cat-card:hover{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1);border-color:var(--amz-border);}
+.cat-icon{font-size:28px;margin-bottom:6px;}
+.cat-name{font-size:12px;font-weight:700;color:var(--amz-text);}
+
+/* ── PRODUCT DETAIL ── */
+#productPage{background:white;min-height:calc(100vh - 100px);}
+.prod-detail-img{width:100%;aspect-ratio:1;background:#F3F3F3;display:flex;align-items:center;justify-content:center;font-size:80px;overflow:hidden;}
+.prod-detail-img img{width:100%;height:100%;object-fit:contain;max-height:300px;}
+.prod-detail-body{padding:14px;}
+.prod-detail-name{font-size:17px;font-weight:600;line-height:1.4;margin-bottom:6px;}
+.prod-detail-price{font-size:24px;font-weight:700;margin-bottom:4px;}
+.prod-detail-price .pence{font-size:14px;vertical-align:super;}
+.prod-detail-stars{color:var(--amz-star);font-size:14px;margin-bottom:8px;}
+.prod-detail-desc{font-size:14px;color:var(--amz-muted);line-height:1.6;margin-bottom:12px;border-top:1px solid var(--amz-border);padding-top:12px;}
+.prod-detail-stock{font-size:16px;font-weight:700;color:var(--amz-green);margin-bottom:10px;}
+.prod-detail-stock.low{color:var(--amz-red);}
+.prod-detail-stock.out{color:#888;}
+
+.qty-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.qty-label{font-size:13px;font-weight:600;}
+.qty-select{height:34px;border:1px solid var(--amz-border);border-radius:4px;padding:0 8px;font-size:14px;font-family:'Nunito',sans-serif;background:var(--amz-bg);}
+
+.btn-buy-now{width:100%;height:40px;background:linear-gradient(to bottom,#FFE033,#F0C14B);border:1px solid #A88734;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:8px;}
+.btn-add-cart-lg{width:100%;height:40px;background:linear-gradient(to bottom,#F7DFA5,#F0C14B);border:1px solid #A88734;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
+
+/* ── CART ── */
+#cartPage{padding:8px;}
+.cart-title{font-family:'Bitter',serif;font-size:24px;font-weight:700;padding:12px 4px 8px;}
+.cart-layout{display:flex;flex-direction:column;gap:8px;}
+.cart-items-box{background:white;border-radius:6px;border:1px solid var(--amz-border);}
+.cart-item{display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--amz-border);}
+.cart-item:last-child{border-bottom:none;}
+.cart-item-img{width:80px;height:80px;background:#F3F3F3;border-radius:4px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:32px;}
+.cart-item-img img{width:100%;height:100%;object-fit:contain;}
+.cart-item-info{flex:1;min-width:0;}
+.cart-item-name{font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3;}
+.cart-item-price{font-size:16px;font-weight:700;color:var(--amz-red);margin-bottom:6px;}
+.cart-item-actions{display:flex;align-items:center;gap:8px;}
+.cart-qty-btn{width:28px;height:28px;border:1px solid var(--amz-border);border-radius:4px;background:var(--amz-bg);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.cart-qty{font-size:14px;font-weight:700;min-width:24px;text-align:center;}
+.cart-remove{font-size:12px;color:var(--amz-link);cursor:pointer;margin-left:8px;}
+.cart-remove:hover{color:var(--amz-red);text-decoration:underline;}
+.cart-empty{text-align:center;padding:40px 20px;color:var(--amz-muted);}
+.cart-empty-icon{font-size:56px;margin-bottom:12px;}
+
+.order-summary-box{background:white;border-radius:6px;border:1px solid var(--amz-border);padding:16px;}
+.order-summary-title{font-size:18px;font-weight:700;margin-bottom:12px;}
+.order-summary-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;}
+.order-summary-row.total{font-size:16px;font-weight:700;border-top:1px solid var(--amz-border);padding-top:10px;margin-top:4px;}
+.btn-checkout{width:100%;height:40px;background:linear-gradient(to bottom,#FFE033,#F0C14B);border:1px solid #A88734;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:10px;}
+
+/* ── CHECKOUT ── */
+#checkoutPage{padding:8px;}
+.checkout-title{font-family:'Bitter',serif;font-size:22px;font-weight:700;padding:12px 4px 8px;}
+.checkout-section{background:white;border-radius:6px;border:1px solid var(--amz-border);padding:16px;margin-bottom:10px;}
+.checkout-section-title{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.checkout-step-num{width:24px;height:24px;border-radius:50%;background:var(--amz-navy);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+.pin-row-co{display:flex;gap:10px;justify-content:center;margin:12px 0;}
+.pin-box-co{width:50px;height:56px;border:2px solid var(--amz-border);border-radius:6px;text-align:center;font-size:22px;font-weight:700;color:var(--amz-text);background:#F3F3F3;outline:none;transition:border-color .15s;font-family:'Nunito',sans-serif;-webkit-text-security:disc;}
+.pin-box-co:focus{border-color:var(--amz-orange);}
+
+.checkout-order-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--amz-border);}
+.checkout-order-item:last-child{border-bottom:none;}
+.co-img{width:60px;height:60px;background:#F3F3F3;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;overflow:hidden;}
+.co-img img{width:100%;height:100%;object-fit:contain;}
+.co-info{flex:1;}
+.co-name{font-size:13px;font-weight:600;line-height:1.3;}
+.co-price{font-size:14px;font-weight:700;}
+
+/* ── ORDERS ── */
+#ordersPage{padding:8px;}
+.orders-title{font-family:'Bitter',serif;font-size:22px;font-weight:700;padding:12px 4px 8px;}
+.order-card{background:white;border:1px solid var(--amz-border);border-radius:6px;margin-bottom:10px;overflow:hidden;}
+.order-card-header{background:var(--amz-bg);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--amz-border);}
+.order-id{font-size:12px;color:var(--amz-muted);}
+.order-date{font-size:12px;color:var(--amz-muted);}
+.order-card-body{padding:14px;display:flex;gap:12px;}
+.order-img{width:70px;height:70px;background:#F3F3F3;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;}
+.order-img img{width:100%;height:100%;object-fit:contain;}
+.order-info{flex:1;}
+.order-prod-name{font-size:14px;font-weight:600;margin-bottom:4px;}
+.order-amount{font-size:14px;font-weight:700;}
+.order-status-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;margin-top:4px;}
+.osb-processing{background:#FFF3CD;color:#856404;}
+.osb-shipped{background:#CCE5FF;color:#004085;}
+.osb-delivered{background:#D4EDDA;color:#155724;}
+.osb-cancelled{background:#F8D7DA;color:#721C24;}
+.order-delivery-info{font-size:12px;color:var(--amz-green);font-weight:600;margin-top:4px;}
+
+/* ── PROFILE ── */
+#profilePage{padding:8px;}
+.profile-box{background:white;border:1px solid var(--amz-border);border-radius:6px;padding:20px;margin-bottom:10px;}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--amz-orange);color:white;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.profile-name{font-size:20px;font-weight:700;margin-bottom:2px;}
+.profile-upi{font-size:13px;color:var(--amz-muted);}
+.profile-menu-item{display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--amz-border);cursor:pointer;}
+.profile-menu-item:last-child{border-bottom:none;}
+.profile-menu-item:hover .pmi-label{color:var(--amz-link);}
+.pmi-left{display:flex;align-items:center;gap:12px;}
+.pmi-icon{font-size:20px;}
+.pmi-label{font-size:14px;font-weight:600;}
+.pmi-arrow{color:var(--amz-muted);}
+
+/* ── SEARCH RESULTS ── */
+#searchPage{padding:8px;}
+.search-results-title{font-size:16px;color:var(--amz-muted);padding:8px 4px;}
+.search-results-title span{color:var(--amz-text);font-weight:700;}
+
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:white;border-radius:16px 16px 0 0;padding:22px 20px 40px;width:100%;max-width:480px;animation:slideUp .3s cubic-bezier(.32,.72,0,1);max-height:92vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:#DDD;border-radius:2px;margin:0 auto 18px;}
+.modal-title{font-family:'Bitter',serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+.modal-sub{font-size:13px;color:var(--amz-muted);margin-bottom:16px;}
+.modal-err{color:var(--amz-red);font-size:13px;text-align:center;min-height:16px;margin-bottom:8px;}
+.modal-ok{color:var(--amz-green);font-size:14px;font-weight:700;text-align:center;margin-bottom:8px;}
+.modal-btn-row{display:flex;gap:10px;margin-top:8px;}
+.btn-mo-sec{flex:1;height:40px;background:white;border:1.5px solid var(--amz-border);border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;}
+.btn-mo-pri{flex:2;height:40px;background:linear-gradient(to bottom,#FFE033,#F0C14B);border:1px solid #A88734;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--amz-text);}
+.btn-mo-pri:disabled{opacity:.6;cursor:not-allowed;}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--amz-navy);color:white;padding:12px 20px;border-radius:6px;font-size:14px;font-weight:600;z-index:500;transition:transform .3s;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* Spinner */
+.spinner{display:inline-block;width:22px;height:22px;border:2.5px solid #DDD;border-top-color:var(--amz-orange);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-center{text-align:center;padding:32px;color:var(--amz-muted);}
+
+/* Stars helper */
+function starsHtml(n){return'★'.repeat(Math.round(n||4))+'☆'.repeat(5-Math.round(n||4));}
+
+/* Bottom padding for mobile */
+.bottom-spacer{height:20px;}
 </style>
-
 </head>
-
 <body>
 
-<div class="container">
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-top">
+    <!-- AmazX Logo -->
+    <div class="amazx-logo" onclick="showPage('home')">
+      <div class="amazx-logo-text">AmazX</div>
+      <svg width="60" height="12" viewBox="0 0 60 12">
+        <path d="M2 6 Q15 12 30 9 Q45 6 58 10" stroke="#FF9900" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <polygon points="54,7 60,10 55,13" fill="#FF9900"/>
+      </svg>
+    </div>
 
-<div class="logo">
-Amaz<span>X</span>
+    <!-- Search -->
+    <div class="search-bar">
+      <select class="search-cat" id="searchCatSelect">
+        <option value="">All</option>
+      </select>
+      <input class="search-input" type="text" id="searchInput" placeholder="Search AmazX…" autocomplete="off"/>
+      <button class="search-btn" onclick="doSearch()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Account -->
+    <div class="header-account" onclick="showPage('profile')" id="headerAccount">
+      <div class="header-account-sub">Hello, Sign in</div>
+      <div class="header-account-main">Account</div>
+    </div>
+
+    <!-- Orders -->
+    <div class="header-orders" onclick="showPage('orders')">
+      <div style="color:#CCC;font-size:11px;">Returns &</div>
+      <div style="font-weight:700;font-size:13px;">Orders</div>
+    </div>
+
+    <!-- Cart -->
+    <div class="header-cart" onclick="showPage('cart')">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="3" y1="6" x2="21" y2="6" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M16 10a4 4 0 01-8 0" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="cart-count" id="cartCount">0</span>
+      <span class="cart-label">Cart</span>
+    </div>
+  </div>
+
+  <!-- Nav Bar -->
+  <nav class="header-nav">
+    <div class="nav-item active" onclick="showPage('home');setActiveNav(this)">🏠 Home</div>
+    <div class="nav-item" onclick="filterCategory('Electronics');setActiveNav(this)">📱 Electronics</div>
+    <div class="nav-item" onclick="filterCategory('Fashion');setActiveNav(this)">👗 Fashion</div>
+    <div class="nav-item" onclick="filterCategory('Books');setActiveNav(this)">📚 Books</div>
+    <div class="nav-item" onclick="filterCategory('Home');setActiveNav(this)">🏡 Home & Kitchen</div>
+    <div class="nav-item" onclick="filterCategory('Sports');setActiveNav(this)">⚽ Sports</div>
+    <div class="nav-item" onclick="filterCategory('Beauty');setActiveNav(this)">💄 Beauty</div>
+    <div class="nav-item" onclick="filterCategory('Toys');setActiveNav(this)">🧸 Toys</div>
+  </nav>
+</header>
+
+<!-- ── SIGNIN PAGE ── -->
+<div id="signinPage" class="page active">
+  <div style="text-align:center;padding:20px 16px 0;">
+    <div style="font-family:'Bitter',serif;font-size:32px;font-weight:700;color:var(--amz-navy);">
+      AmazX
+      <svg width="80" height="14" viewBox="0 0 80 14" style="display:block;margin:2px auto 0;">
+        <path d="M2 7 Q20 14 40 10 Q60 6 78 11" stroke="#FF9900" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <polygon points="73,8 80,11 74,15" fill="#FF9900"/>
+      </svg>
+    </div>
+  </div>
+  <div id="signinPage" style="display:flex;flex-direction:column;align-items:center;padding:16px;">
+    <div class="signin-box">
+      <h2>Sign In</h2>
+      <div id="siErr" class="err-msg"></div>
+      <div class="form-group">
+        <label>Username</label>
+        <input class="form-input" type="text" id="siUser" placeholder="Enter username" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="pass-wrap">
+          <input class="form-input" type="password" id="siPass" placeholder="••••••••" autocomplete="current-password"/>
+          <button class="pass-toggle" type="button" onclick="togglePw('siPass',this)">Show</button>
+        </div>
+      </div>
+      <button class="btn-amz-yellow" id="siBtn" onclick="doSignin()">
+        <span id="siBtnTxt">Sign In</span>
+      </button>
+      <div class="divider-or">or</div>
+      <button class="btn-amz-orange" onclick="window.location.href='https://auth.cupx.in?from=amazx'">
+        Create your AmazX account
+      </button>
+      <div style="margin-top:14px;font-size:12px;color:var(--amz-muted);text-align:center;">
+        By signing in you agree to AmazX's conditions of use
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="tagline">
-By CupX Corporation
+<!-- ── HOME PAGE ── -->
+<div id="homePage" class="page">
+  <!-- Hero -->
+  <div class="hero-banner">
+    <div class="hero-title">Welcome to AmazX</div>
+    <div class="hero-sub">Millions of products. Delivered to your door.</div>
+    <div class="hero-search-big">
+      <input class="hero-search-input" type="text" id="heroSearch" placeholder="What are you looking for?"/>
+      <button class="hero-search-btn" onclick="doHeroSearch()">Search</button>
+    </div>
+  </div>
+
+  <!-- Category Pills -->
+  <div class="category-strip" id="categoryStrip">
+    <div class="cat-pill active" onclick="filterCategory('',this)">All</div>
+    <div class="cat-pill" onclick="filterCategory('Electronics',this)">📱 Electronics</div>
+    <div class="cat-pill" onclick="filterCategory('Fashion',this)">👗 Fashion</div>
+    <div class="cat-pill" onclick="filterCategory('Books',this)">📚 Books</div>
+    <div class="cat-pill" onclick="filterCategory('Home',this)">🏡 Home</div>
+    <div class="cat-pill" onclick="filterCategory('Sports',this)">⚽ Sports</div>
+    <div class="cat-pill" onclick="filterCategory('Beauty',this)">💄 Beauty</div>
+    <div class="cat-pill" onclick="filterCategory('Toys',this)">🧸 Toys</div>
+  </div>
+
+  <!-- Featured Products -->
+  <div class="home-section">
+    <div class="section-head">
+      <h3>Featured Products</h3>
+    </div>
+    <div class="product-grid" id="featuredGrid">
+      <div class="loading-center" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- Deals -->
+  <div class="home-section">
+    <div class="section-head">
+      <h3>🔥 Today's Deals</h3>
+    </div>
+    <div class="prod-row" id="dealsRow">
+      <div class="loading-center"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <div class="bottom-spacer"></div>
 </div>
 
-<div class="title">
-Coming Soon
+<!-- ── SEARCH PAGE ── -->
+<div id="searchPage" class="page">
+  <div class="search-results-title" id="searchResultsTitle">Results for "<span id="searchQuery"></span>"</div>
+  <div style="padding:0 8px;">
+    <div class="product-grid" id="searchGrid">
+      <div class="loading-center" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+  </div>
+  <div class="bottom-spacer"></div>
 </div>
 
-<div class="subtitle">
-A new way to shop inside the CupX ecosystem.<br>
-We're building something fast, secure and simple.
+<!-- ── PRODUCT DETAIL PAGE ── -->
+<div id="productPage" class="page">
+  <div style="padding:10px 12px;">
+    <button onclick="history.back(); goBackProd()" style="background:none;border:none;cursor:pointer;color:var(--amz-link);font-size:13px;font-family:'Nunito',sans-serif;">← Back to results</button>
+  </div>
+  <div class="prod-detail-img" id="pdImg"><span id="pdEmoji">📦</span></div>
+  <div class="prod-detail-body">
+    <div class="prod-detail-name" id="pdName">—</div>
+    <div class="prod-detail-stars" id="pdStars">★★★★☆</div>
+    <div class="prod-detail-price">₹<span id="pdPrice">—</span></div>
+    <div class="prod-detail-stock" id="pdStock">In Stock</div>
+    <div class="prod-detail-desc" id="pdDesc">No description available.</div>
+    <div class="qty-row">
+      <label class="qty-label">Qty:</label>
+      <select class="qty-select" id="pdQty">
+        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </div>
+    <button class="btn-buy-now" onclick="buyNow()">Buy Now</button>
+    <button class="btn-add-cart-lg" onclick="addToCartFromDetail()">🛒 Add to Cart</button>
+  </div>
+  <div class="bottom-spacer"></div>
 </div>
 
-<a href="https://cupx.in" class="btn">
-Visit CupX
-</a>
-
+<!-- ── CART PAGE ── -->
+<div id="cartPage" class="page">
+  <div class="cart-title">Shopping Cart</div>
+  <div class="cart-layout">
+    <div class="cart-items-box" id="cartItemsBox">
+      <div class="cart-empty"><div class="cart-empty-icon">🛒</div><div>Your cart is empty</div></div>
+    </div>
+    <div class="order-summary-box" id="cartSummaryBox" style="display:none">
+      <div class="order-summary-title">Order Summary</div>
+      <div class="order-summary-row"><span>Items</span><span id="cartSummaryItems">0</span></div>
+      <div class="order-summary-row"><span>Subtotal</span><span id="cartSummaryTotal">₹0</span></div>
+      <div class="order-summary-row"><span>Delivery</span><span style="color:var(--amz-green)">FREE</span></div>
+      <div class="order-summary-row total"><span>Order Total</span><span id="cartSummaryGrand">₹0</span></div>
+      <button class="btn-checkout" onclick="showPage('checkout');renderCheckout()">Proceed to Checkout</button>
+    </div>
+  </div>
+  <div class="bottom-spacer"></div>
 </div>
 
-<div class="footer">
-© 2026 CupX Corporation
+<!-- ── CHECKOUT PAGE ── -->
+<div id="checkoutPage" class="page">
+  <div class="checkout-title">Checkout</div>
+
+  <!-- Delivery Address -->
+  <div class="checkout-section">
+    <div class="checkout-section-title"><div class="checkout-step-num">1</div> Delivery Address</div>
+    <div class="form-group"><label>Full Name</label><input class="form-input" id="coName" placeholder="Full name"/></div>
+    <div class="form-group"><label>Phone</label><input class="form-input" id="coPhone" placeholder="Phone number" type="tel"/></div>
+    <div class="form-group"><label>Address</label><input class="form-input" id="coAddress" placeholder="House/Flat, Street"/></div>
+    <div class="form-grid">
+      <div class="form-group"><label>City</label><input class="form-input" id="coCity" placeholder="City"/></div>
+      <div class="form-group"><label>State</label><input class="form-input" id="coState" placeholder="State"/></div>
+    </div>
+    <div class="form-group"><label>Pincode</label><input class="form-input" id="coPincode" placeholder="Pincode" type="tel" maxlength="6"/></div>
+  </div>
+
+  <!-- Order Items -->
+  <div class="checkout-section">
+    <div class="checkout-section-title"><div class="checkout-step-num">2</div> Order Items</div>
+    <div id="checkoutItems"></div>
+    <div class="order-summary-row total" style="margin-top:10px;"><span>Total</span><span id="checkoutTotal">₹0</span></div>
+  </div>
+
+  <!-- Payment -->
+  <div class="checkout-section">
+    <div class="checkout-section-title"><div class="checkout-step-num">3</div> Payment via CupX UPI</div>
+    <div style="background:#FFF3CD;border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:13px;">
+      💳 Paying to: <strong>amazxmerchant@cupx</strong><br/>
+      Amount will be deducted from your CupX wallet
+    </div>
+    <div style="font-size:13px;font-weight:700;text-align:center;margin-bottom:6px;color:var(--amz-muted);">ENTER UPI PIN</div>
+    <div class="pin-row-co">
+      <input class="pin-box-co" type="password" maxlength="1" inputmode="numeric" id="cop0"/>
+      <input class="pin-box-co" type="password" maxlength="1" inputmode="numeric" id="cop1"/>
+      <input class="pin-box-co" type="password" maxlength="1" inputmode="numeric" id="cop2"/>
+      <input class="pin-box-co" type="password" maxlength="1" inputmode="numeric" id="cop3"/>
+    </div>
+    <div id="coErr" class="modal-err"></div>
+    <button class="btn-amz-yellow" id="coPlaceBtn" onclick="placeOrder()" style="border-radius:6px;height:44px;font-size:15px;">
+      Place Order
+    </button>
+  </div>
+  <div class="bottom-spacer"></div>
 </div>
 
+<!-- ── ORDERS PAGE ── -->
+<div id="ordersPage" class="page">
+  <div class="orders-title">Your Orders</div>
+  <div id="ordersList">
+    <div class="loading-center"><div class="spinner"></div></div>
+  </div>
+  <div class="bottom-spacer"></div>
+</div>
+
+<!-- ── PROFILE PAGE ── -->
+<div id="profilePage" class="page">
+  <div style="padding:8px;">
+    <div class="profile-box">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-upi" id="profileUpiId">—</div>
+      <div style="margin-top:6px;font-size:13px;color:var(--amz-green);font-weight:600;" id="profileBal">Balance: ₹ ••••</div>
+    </div>
+    <div class="profile-box">
+      <div class="profile-menu-item" onclick="showPage('orders')">
+        <div class="pmi-left"><span class="pmi-icon">📦</span><span class="pmi-label">Your Orders</span></div>
+        <span class="pmi-arrow">›</span>
+      </div>
+      <div class="profile-menu-item" onclick="window.location.href='https://upi.cupx.in'">
+        <div class="pmi-left"><span class="pmi-icon">🔑</span><span class="pmi-label">Manage UPI & Balance</span></div>
+        <span class="pmi-arrow">›</span>
+      </div>
+      <div class="profile-menu-item" onclick="window.location.href='https://pay.cupx.in'">
+        <div class="pmi-left"><span class="pmi-icon">💸</span><span class="pmi-label">CPay – Send Money</span></div>
+        <span class="pmi-arrow">›</span>
+      </div>
+      <div class="profile-menu-item" onclick="window.location.href='https://auth.cupx.in'">
+        <div class="pmi-left"><span class="pmi-icon">⚙️</span><span class="pmi-label">Account Settings</span></div>
+        <span class="pmi-arrow">›</span>
+      </div>
+      <div class="profile-menu-item" onclick="logout()">
+        <div class="pmi-left"><span class="pmi-icon">⎋</span><span class="pmi-label" style="color:var(--amz-red)">Sign Out</span></div>
+        <span class="pmi-arrow">›</span>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-spacer"></div>
+</div>
+
+<!-- ── ORDER SUCCESS MODAL ── -->
+<div class="modal-overlay" id="successModal" onclick="closeSuccessModal(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;padding:10px 0;">
+      <div style="font-size:60px;margin-bottom:12px;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275);">✅</div>
+      <div style="font-family:'Bitter',serif;font-size:22px;font-weight:700;color:var(--amz-green);margin-bottom:6px;">Order Placed!</div>
+      <div style="font-size:28px;font-weight:700;margin-bottom:4px;" id="successAmt">₹0</div>
+      <div style="font-size:14px;color:var(--amz-muted);margin-bottom:6px;" id="successItems">—</div>
+      <div style="font-size:13px;color:var(--amz-green);font-weight:600;margin-bottom:20px;" id="successDelivery">Delivering soon!</div>
+      <button class="btn-amz-yellow" style="border-radius:6px;max-width:220px;margin:0 auto;" onclick="closeSuccessModal();showPage('orders');">Track Your Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──
+const SUPABASE_URL = 'https://astnfrwbebzxcxlltpkn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdG5mcndiZWJ6eGN4bGx0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjg2OTIsImV4cCI6MjA5MDgwNDY5Mn0.gqp08ROPoDZWyE0KVtV-VCFdTmEXl4HOEL8v7Xjd0I4';
+const MERCHANT_UPI = 'amazxmerchant@cupx';
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let cart = []; // [{product, qty}]
+let allProducts = [];
+let currentProduct = null;
+let prevPage = 'home';
+
+// Category emoji map
+const CAT_EMOJI = {Electronics:'📱',Fashion:'👗',Books:'📚',Home:'🏡',Sports:'⚽',Beauty:'💄',Toys:'🧸',Food:'🍔',Other:'📦'};
+function catEmoji(c){ return CAT_EMOJI[c] || '📦'; }
+
+// Stars
+function stars(n){ const r=Math.round(n||4); return '★'.repeat(r)+'☆'.repeat(5-r); }
+
+// Random delivery: 2-4 hours from now
+function randomDelivery(){
+  const mins = Math.floor(Math.random()*121)+120; // 120-240 mins
+  const d = new Date(Date.now()+mins*60000);
+  return d.toISOString();
+}
+
+// ── BOOT ──
+(function init(){
+  const saved = localStorage.getItem('cupx_user');
+  if(saved){ try{ currentUser=JSON.parse(saved); }catch(e){} }
+  if(!currentUser){ showOnlyPage('signinPage'); return; }
+  onLoggedIn();
+})();
+
+function onLoggedIn(){
+  updateHeaderAccount();
+  loadCart();
+  loadProducts();
+  showOnlyPage('homePage');
+  loadSearchCats();
+}
+
+// ── PAGE ROUTING ──
+function showOnlyPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el = document.getElementById(id);
+  if(el){ el.classList.add('active'); window.scrollTo(0,0); }
+}
+
+function showPage(name){
+  if(!currentUser && name!=='signin'){
+    showOnlyPage('signinPage'); return;
+  }
+  const map = {home:'homePage',search:'searchPage',product:'productPage',cart:'cartPage',checkout:'checkoutPage',orders:'ordersPage',profile:'profilePage',signin:'signinPage'};
+  showOnlyPage(map[name]||'homePage');
+  if(name==='orders') loadOrders();
+  if(name==='profile') renderProfile();
+  if(name==='cart') renderCart();
+}
+
+function setActiveNav(el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── AUTH ──
+function togglePw(id,btn){
+  const el=document.getElementById(id);
+  const h=el.type==='password';
+  el.type=h?'text':'password';
+  btn.textContent=h?'Hide':'Show';
+}
+
+document.getElementById('siUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('siPass').focus();});
+document.getElementById('siPass').addEventListener('keydown',e=>{if(e.key==='Enter')doSignin();});
+
+async function doSignin(){
+  const u=document.getElementById('siUser').value.trim().toLowerCase();
+  const p=document.getElementById('siPass').value;
+  const errEl=document.getElementById('siErr');
+  const btn=document.getElementById('siBtn');
+  errEl.textContent='';
+  if(!u||!p){errEl.textContent='Please fill in all fields';return;}
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner" style="width:18px;height:18px;border-width:2px;"></div>';
+  const{data,error}=await db.from('users').select('*').eq('username',u).eq('password',p).single();
+  btn.disabled=false;
+  btn.innerHTML='<span id="siBtnTxt">Sign In</span>';
+  if(error||!data){errEl.textContent='Invalid username or password';return;}
+  localStorage.setItem('cupx_user',JSON.stringify(data));
+  currentUser=data;
+  onLoggedIn();
+}
+
+function updateHeaderAccount(){
+  if(!currentUser)return;
+  const name=(currentUser.full_name||currentUser.username).split(' ')[0];
+  document.getElementById('headerAccount').innerHTML=`<div class="header-account-sub">Hello, ${name}</div><div class="header-account-main">Account ▾</div>`;
+}
+
+function logout(){
+  if(confirm('Sign out of AmazX?')){
+    localStorage.removeItem('cupx_user');
+    currentUser=null; cart=[];
+    updateCartBadge();
+    showOnlyPage('signinPage');
+  }
+}
+
+// ── PRODUCTS ──
+async function loadProducts(){
+  const{data,error}=await db.from('products').select('*').order('created_at',{ascending:false});
+  if(error||!data){document.getElementById('featuredGrid').innerHTML='<div class="loading-center" style="grid-column:1/-1">Could not load products</div>';return;}
+  // Filter to amazx store
+  allProducts=data.filter(p=>!p.store||p.store.toLowerCase().includes('amazx')||p.store==='both');
+  renderFeatured();
+  renderDeals();
+}
+
+function productCard(p, mini=false){
+  const img = p.image
+    ? `<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextSibling.style.display='flex'"/><span style="display:none;font-size:${mini?'32':'48'}px">${catEmoji(p.category)}</span>`
+    : `<span style="font-size:${mini?'32':'48'}px">${catEmoji(p.category)}</span>`;
+  const inStock = (p.stock===null||p.stock===undefined||p.stock>0);
+  const lowStock = p.stock!==null && p.stock!==undefined && p.stock<=5 && p.stock>0;
+  return `<div class="prod-card" onclick="openProduct('${p.id}')">
+    <div class="prod-img">${img}</div>
+    <div class="prod-body">
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-stars">${stars(4)}</div>
+      <div class="prod-price">₹${parseFloat(p.price).toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+      ${lowStock?`<div class="prod-stock-low">Only ${p.stock} left!</div>`:''}
+      ${!inStock?`<div class="prod-stock-low">Out of Stock</div>`:''}
+      <div class="prod-add-btn">
+        <button class="btn-add-cart" onclick="event.stopPropagation();addToCart('${p.id}')" ${!inStock?'disabled':''}>Add to Cart</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderFeatured(filtered=null){
+  const prods = filtered || allProducts.slice(0,12);
+  if(!prods.length){document.getElementById('featuredGrid').innerHTML='<div class="loading-center" style="grid-column:1/-1;color:var(--amz-muted)">No products found</div>';return;}
+  document.getElementById('featuredGrid').innerHTML=prods.map(p=>productCard(p)).join('');
+}
+
+function renderDeals(){
+  const deals = [...allProducts].sort(()=>Math.random()-.5).slice(0,8);
+  document.getElementById('dealsRow').innerHTML=deals.map(p=>productCard(p,true)).join('');
+}
+
+function filterCategory(cat, btn){
+  document.querySelectorAll('.cat-pill').forEach(c=>c.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const filtered = cat ? allProducts.filter(p=>p.category===cat) : allProducts;
+  renderFeatured(filtered);
+  showPage('home');
+}
+
+// ── SEARCH ──
+function loadSearchCats(){
+  const cats=['All',...new Set(allProducts.map(p=>p.category).filter(Boolean))];
+  const sel=document.getElementById('searchCatSelect');
+  sel.innerHTML=cats.map(c=>`<option value="${c==='All'?'':c}">${c}</option>`).join('');
+}
+
+function doSearch(){
+  const q=document.getElementById('searchInput').value.trim();
+  const cat=document.getElementById('searchCatSelect').value;
+  runSearch(q,cat);
+}
+
+function doHeroSearch(){
+  const q=document.getElementById('heroSearch').value.trim();
+  document.getElementById('searchInput').value=q;
+  runSearch(q,'');
+}
+
+function runSearch(q,cat){
+  if(!q&&!cat)return;
+  showPage('search');
+  let results=allProducts;
+  if(cat) results=results.filter(p=>p.category===cat);
+  if(q) results=results.filter(p=>
+    p.name.toLowerCase().includes(q.toLowerCase())||
+    (p.description&&p.description.toLowerCase().includes(q.toLowerCase()))||
+    (p.category&&p.category.toLowerCase().includes(q.toLowerCase()))
+  );
+  document.getElementById('searchQuery').textContent=q||(cat||'');
+  document.getElementById('searchResultsTitle').innerHTML=`<span style="color:var(--amz-muted);">${results.length} results</span> for "<span>${q||(cat||'')}</span>"`;
+  document.getElementById('searchGrid').innerHTML=results.length ? results.map(p=>productCard(p)).join('') : '<div class="loading-center" style="grid-column:1/-1;color:var(--amz-muted)">No results found</div>';
+}
+
+document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+document.getElementById('heroSearch').addEventListener('keydown',e=>{if(e.key==='Enter')doHeroSearch();});
+
+// ── PRODUCT DETAIL ──
+function openProduct(id){
+  const p=allProducts.find(x=>x.id===id);
+  if(!p)return;
+  currentProduct=p;
+  prevPage=document.querySelector('.page.active')?.id||'homePage';
+  const inStock=(p.stock===null||p.stock===undefined||p.stock>0);
+  const img=p.image?`<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';document.getElementById('pdEmoji').style.display='block'"/>`:'';
+  document.getElementById('pdImg').innerHTML=img+`<span id="pdEmoji" style="${p.image?'display:none':'display:block'};font-size:80px">${catEmoji(p.category)}</span>`;
+  document.getElementById('pdName').textContent=p.name;
+  document.getElementById('pdStars').textContent=stars(4)+' (4.0)';
+  document.getElementById('pdPrice').textContent=parseFloat(p.price).toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('pdStock').textContent=!inStock?'Out of Stock':(p.stock&&p.stock<=5?`Only ${p.stock} left – order soon!`:'In Stock');
+  document.getElementById('pdStock').className='prod-detail-stock'+((!inStock)?' out':(p.stock&&p.stock<=5?' low':''));
+  document.getElementById('pdDesc').textContent=p.description||'No description available.';
+  // qty options
+  const max=Math.min(p.stock||10,10);
+  document.getElementById('pdQty').innerHTML=[...Array(max)].map((_,i)=>`<option>${i+1}</option>`).join('');
+  showOnlyPage('productPage');
+}
+
+function goBackProd(){
+  showOnlyPage(prevPage);
+}
+
+function addToCartFromDetail(){
+  if(!currentProduct)return;
+  const qty=parseInt(document.getElementById('pdQty').value);
+  addToCartItem(currentProduct,qty);
+}
+
+function buyNow(){
+  if(!currentProduct)return;
+  const qty=parseInt(document.getElementById('pdQty').value);
+  addToCartItem(currentProduct,qty);
+  showPage('cart');
+}
+
+// ── CART ──
+function loadCart(){
+  // Load from DB (users.cart jsonb) or localStorage fallback
+  try{
+    const saved=JSON.parse(localStorage.getItem('amazx_cart_'+currentUser.id)||'[]');
+    cart=saved;
+  }catch(e){cart=[];}
+  updateCartBadge();
+}
+
+async function saveCart(){
+  localStorage.setItem('amazx_cart_'+currentUser.id, JSON.stringify(cart));
+  // Also persist to DB
+  try{
+    await db.from('users').update({cart:cart}).eq('id',currentUser.id);
+  }catch(e){}
+}
+
+function addToCart(productId){
+  const p=allProducts.find(x=>x.id===productId);
+  if(!p)return;
+  addToCartItem(p,1);
+}
+
+function addToCartItem(p,qty){
+  const idx=cart.findIndex(c=>c.product.id===p.id);
+  if(idx>=0) cart[idx].qty+=qty;
+  else cart.push({product:p,qty});
+  saveCart();
+  updateCartBadge();
+  showToast(`✓ ${p.name} added to cart`);
+}
+
+function updateCartBadge(){
+  const total=cart.reduce((s,c)=>s+c.qty,0);
+  document.getElementById('cartCount').textContent=total;
+}
+
+function renderCart(){
+  if(!cart.length){
+    document.getElementById('cartItemsBox').innerHTML='<div class="cart-empty"><div class="cart-empty-icon">🛒</div><div style="font-size:16px;font-weight:700;margin-bottom:6px;">Your cart is empty</div><div style="font-size:13px;color:var(--amz-muted);">Add items to get started</div><br/><button class="btn-amz-yellow" style="width:auto;padding:0 20px;border-radius:4px;" onclick="showPage(\'home\')">Continue Shopping</button></div>';
+    document.getElementById('cartSummaryBox').style.display='none';
+    return;
+  }
+  document.getElementById('cartItemsBox').innerHTML=cart.map((c,i)=>{
+    const p=c.product;
+    const img=p.image?`<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><span style="display:none;font-size:32px">${catEmoji(p.category)}</span>`:`<span style="font-size:32px">${catEmoji(p.category)}</span>`;
+    return `<div class="cart-item">
+      <div class="cart-item-img">${img}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${p.name}</div>
+        <div class="cart-item-price">₹${(parseFloat(p.price)*c.qty).toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+        <div class="cart-item-actions">
+          <button class="cart-qty-btn" onclick="changeQty(${i},-1)">−</button>
+          <span class="cart-qty">${c.qty}</span>
+          <button class="cart-qty-btn" onclick="changeQty(${i},1)">+</button>
+          <span class="cart-remove" onclick="removeFromCart(${i})">Delete</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const total=cart.reduce((s,c)=>s+parseFloat(c.product.price)*c.qty,0);
+  const items=cart.reduce((s,c)=>s+c.qty,0);
+  document.getElementById('cartSummaryItems').textContent=items+' item'+(items>1?'s':'');
+  document.getElementById('cartSummaryTotal').textContent='₹'+total.toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('cartSummaryGrand').textContent='₹'+total.toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('cartSummaryBox').style.display='block';
+}
+
+function changeQty(idx,delta){
+  cart[idx].qty+=delta;
+  if(cart[idx].qty<=0) cart.splice(idx,1);
+  saveCart();
+  updateCartBadge();
+  renderCart();
+}
+
+function removeFromCart(idx){
+  cart.splice(idx,1);
+  saveCart();
+  updateCartBadge();
+  renderCart();
+}
+
+// ── CHECKOUT ──
+function renderCheckout(){
+  if(!currentUser)return;
+  // Pre-fill address
+  document.getElementById('coName').value=currentUser.full_name||'';
+  document.getElementById('coPhone').value=currentUser.phone||'';
+  document.getElementById('coAddress').value=currentUser.address||'';
+  document.getElementById('coCity').value=currentUser.city||'';
+  document.getElementById('coState').value=currentUser.state||'';
+  document.getElementById('coPincode').value=currentUser.pincode||'';
+  // Items
+  document.getElementById('checkoutItems').innerHTML=cart.map(c=>{
+    const p=c.product;
+    const img=p.image?`<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">`:`<span style="font-size:24px">${catEmoji(p.category)}</span>`;
+    return `<div class="checkout-order-item">
+      <div class="co-img">${img}</div>
+      <div class="co-info">
+        <div class="co-name">${p.name} × ${c.qty}</div>
+        <div class="co-price">₹${(parseFloat(p.price)*c.qty).toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const total=cart.reduce((s,c)=>s+parseFloat(c.product.price)*c.qty,0);
+  document.getElementById('checkoutTotal').textContent='₹'+total.toLocaleString('en-IN',{minimumFractionDigits:2});
+  // clear pin
+  for(let i=0;i<4;i++){const el=document.getElementById('cop'+i);if(el)el.value='';}
+  document.getElementById('coErr').textContent='';
+}
+
+// PIN auto-advance for checkout
+for(let i=0;i<4;i++){
+  const el=document.getElementById('cop'+i);
+  if(!el)continue;
+  el.addEventListener('input',()=>{
+    el.value=el.value.replace(/[^0-9]/g,'').slice(-1);
+    if(el.value&&i<3)document.getElementById('cop'+(i+1)).focus();
+  });
+  el.addEventListener('keydown',e=>{
+    if(e.key==='Backspace'&&!el.value&&i>0)document.getElementById('cop'+(i-1)).focus();
+  });
+}
+
+function getCoPin(){ return [0,1,2,3].map(i=>{const el=document.getElementById('cop'+i);return el?el.value:'';}).join(''); }
+
+async function placeOrder(){
+  const errEl=document.getElementById('coErr');
+  const btn=document.getElementById('coPlaceBtn');
+  errEl.textContent='';
+
+  // Validate address
+  const name=document.getElementById('coName').value.trim();
+  const phone=document.getElementById('coPhone').value.trim();
+  const address=document.getElementById('coAddress').value.trim();
+  const city=document.getElementById('coCity').value.trim();
+  const state=document.getElementById('coState').value.trim();
+  const pincode=document.getElementById('coPincode').value.trim();
+  if(!name||!address||!city||!state||!pincode){errEl.textContent='Please fill in all address fields';return;}
+
+  // Validate PIN
+  const pin=getCoPin();
+  if(pin.length<4){errEl.textContent='Enter your 4-digit UPI PIN';return;}
+  if(!currentUser.upi_pin){errEl.textContent='Please set your UPI PIN first at upi.cupx.in';return;}
+  if(pin!==currentUser.upi_pin){errEl.textContent='Incorrect UPI PIN';return;}
+
+  const total=cart.reduce((s,c)=>s+parseFloat(c.product.price)*c.qty,0);
+  if(parseFloat(currentUser.balance)<total){errEl.textContent=`Insufficient balance. Need ₹${total.toLocaleString('en-IN',{minimumFractionDigits:2})}`;return;}
+
+  btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:18px;height:18px;border-width:2px;"></div> Processing…';
+
+  const fullAddress=`${name}, ${phone}, ${address}, ${city}, ${state} - ${pincode}`;
+  const deliveryTime=randomDelivery();
+
+  try{
+    // Deduct balance
+    const newBal=parseFloat(currentUser.balance)-total;
+    await db.from('users').update({
+      balance:newBal,
+      address,city,state,pincode,phone,
+      full_name:name
+    }).eq('id',currentUser.id);
+
+    // Record transaction
+    const{data:txn}=await db.from('transactions').insert([{
+      from_user:currentUser.username,
+      to_user:'amazxmerchant',
+      amount:total,
+      status:'success',
+      type:'shopping',
+      created_at:new Date().toISOString()
+    }]).select().single();
+
+    // Place orders (one per cart item)
+    for(const c of cart){
+      const p=c.product;
+      await db.from('orders').insert([{
+        user:currentUser.username,
+        product_name:p.name,
+        product_id:p.id,
+        product_image:p.image||null,
+        unit_price:parseFloat(p.price),
+        amount:parseFloat(p.price)*c.qty,
+        quantity:c.qty,
+        payment_status:'paid',
+        order_status:'processing',
+        delivery_status:'processing',
+        store:'amazx',
+        estimated_delivery:deliveryTime,
+        delivery_address:fullAddress,
+        payment_id:txn?.id||null,
+        created_at:new Date().toISOString()
+      }]);
+    }
+
+    // Notification
+    await db.from('notifications').insert([{
+      user:currentUser.username,
+      title:'Order Placed!',
+      message:`Your AmazX order of ₹${total.toFixed(2)} is confirmed. Delivering by ${new Date(deliveryTime).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`,
+      type:'order',
+      is_read:false,
+      created_at:new Date().toISOString()
+    }]);
+
+    currentUser.balance=newBal;
+    localStorage.setItem('cupx_user',JSON.stringify(currentUser));
+    cart=[];
+    saveCart();
+    updateCartBadge();
+
+    btn.disabled=false;btn.textContent='Place Order';
+
+    // Show success
+    document.getElementById('successAmt').textContent='₹'+total.toLocaleString('en-IN',{minimumFractionDigits:2});
+    document.getElementById('successItems').textContent=cart.length===0?'Order confirmed':'';
+    const eta=new Date(deliveryTime).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('successDelivery').textContent=`🚚 Estimated delivery by ${eta} today`;
+    document.getElementById('successModal').classList.add('open');
+
+  }catch(err){
+    btn.disabled=false;btn.textContent='Place Order';
+    errEl.textContent='Order failed: '+err.message;
+  }
+}
+
+// ── ORDERS ──
+async function loadOrders(){
+  document.getElementById('ordersList').innerHTML='<div class="loading-center"><div class="spinner"></div></div>';
+  const{data,error}=await db.from('orders').select('*').eq('user',currentUser.username).order('created_at',{ascending:false});
+  if(error||!data||!data.length){
+    document.getElementById('ordersList').innerHTML='<div style="text-align:center;padding:40px;color:var(--amz-muted);"><div style="font-size:48px;margin-bottom:12px;">📦</div><div>No orders yet</div></div>';
+    return;
+  }
+  // Auto-update delivery status based on time
+  const now=new Date();
+  document.getElementById('ordersList').innerHTML=data.map(o=>{
+    const est=o.estimated_delivery?new Date(o.estimated_delivery):null;
+    let delivStatus=o.delivery_status||'processing';
+    let orderStatus=o.order_status||'processing';
+    if(est&&now>=est&&delivStatus!=='delivered'){delivStatus='delivered';orderStatus='delivered';}
+    else if(est&&(est-now)<3600000&&delivStatus==='processing'){delivStatus='shipped';orderStatus='shipped';}
+    const statusClass={processing:'osb-processing',shipped:'osb-shipped',delivered:'osb-delivered',cancelled:'osb-cancelled'}[orderStatus]||'osb-processing';
+    const img=o.product_image?`<img src="${o.product_image}" alt="${o.product_name}" onerror="this.style.display='none'"/>`:`<span style="font-size:28px">${catEmoji('')}</span>`;
+    const etaStr=est?`${delivStatus==='delivered'?'Delivered':'Estimated delivery'}: ${est.toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`:'';
+    return `<div class="order-card">
+      <div class="order-card-header">
+        <span class="order-id">Order · ${o.id.slice(0,8).toUpperCase()}</span>
+        <span class="order-date">${new Date(o.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>
+      </div>
+      <div class="order-card-body">
+        <div class="order-img">${img}</div>
+        <div class="order-info">
+          <div class="order-prod-name">${o.product_name} × ${o.quantity||1}</div>
+          <div class="order-amount">₹${parseFloat(o.amount).toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+          <div><span class="order-status-badge ${statusClass}">${orderStatus.charAt(0).toUpperCase()+orderStatus.slice(1)}</span></div>
+          ${etaStr?`<div class="order-delivery-info">🚚 ${etaStr}</div>`:''}
+          ${o.delivery_address?`<div style="font-size:11px;color:var(--amz-muted);margin-top:3px;">📍 ${o.delivery_address.slice(0,60)}…</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── PROFILE ──
+function renderProfile(){
+  if(!currentUser)return;
+  const name=currentUser.full_name||currentUser.username;
+  document.getElementById('profileAvatar').textContent=name.charAt(0).toUpperCase();
+  document.getElementById('profileName').textContent=name;
+  document.getElementById('profileUpiId').textContent=currentUser.upi_id||currentUser.username+'@cupx';
+  document.getElementById('profileBal').textContent='Balance: ₹ ••••  (view at upi.cupx.in)';
+}
+
+// ── SUCCESS MODAL ──
+function closeSuccessModal(e){
+  if(!e||e.target===document.getElementById('successModal')){
+    document.getElementById('successModal').classList.remove('open');
+  }
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── POPSTATE (back button) ──
+window.addEventListener('popstate',()=>{ showOnlyPage(prevPage); });
+</script>
 </body>
-
 </html>
