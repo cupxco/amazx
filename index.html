@@ -294,7 +294,7 @@ body{font-family:'Nunito',sans-serif;background:var(--amz-bg);color:var(--amz-te
       <button class="btn-amz-yellow" id="siBtn" onclick="doSignin()"><span id="siBtnTxt">Sign In</span></button>
       <div class="divider-or">or</div>
       <button class="btn-amz-outline" onclick="window.location.href='https://auth.cupx.in?from=amazx'">Create your AmazX account</button>
-      <div style="margin-top:12px;font-size:11px;color:var(--amz-muted);text-align:center;">By signing in you agree to AmazX conditions of use</div>
+      <div style="margin-top:12px;font-size:11px;color:var(--amz-muted);text-align:center;">By signing in you agree to AmazX conditions of use and <a href="https://cupx.in/privacy" target="_blank" style="color:var(--amz-link);">Privacy Policy</a></div>
     </div>
   </div>
 </div>
@@ -327,10 +327,16 @@ body{font-family:'Nunito',sans-serif;background:var(--amz-bg);color:var(--amz-te
     <div class="section-head"><h3>🔥 Today's Deals</h3></div>
     <div class="prod-row" id="dealsRow"><div class="loading-center"><div class="spinner"></div></div></div>
   </div>
+  <div style="background:var(--amz-navy);color:#CCC;text-align:center;padding:18px 16px;margin-top:8px;font-size:12px;">
+    <div style="margin-bottom:8px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
+      <a href="https://cupx.in/privacy" target="_blank" style="color:#CCC;text-decoration:none;">Privacy Policy</a>
+      <a href="https://cupx.in" target="_blank" style="color:#CCC;text-decoration:none;">CupX Home</a>
+      <a href="https://auth.cupx.in" target="_blank" style="color:#CCC;text-decoration:none;">Account</a>
+    </div>
+    <div>© 2026 AmazX · A CupX Corporation Service</div>
+  </div>
   <div class="bottom-spacer"></div>
 </div>
-
-<!-- SEARCH -->
 <div id="searchPage" class="page">
   <div class="search-results-title" id="searchResultsTitle">Search results</div>
   <div style="padding:0 8px;"><div class="product-grid" id="searchGrid"></div></div>
@@ -470,9 +476,8 @@ body{font-family:'Nunito',sans-serif;background:var(--amz-bg);color:var(--amz-te
     </div>
     <div class="profile-box">
       <div class="profile-menu-item" onclick="showPage('orders')"><div class="pmi-left"><span class="pmi-icon">📦</span><span class="pmi-label">Your Orders</span></div><span>›</span></div>
-      <div class="profile-menu-item" onclick="window.location.href='https://upi.cupx.in'"><div class="pmi-left"><span class="pmi-icon">🔑</span><span class="pmi-label">Manage UPI & Balance</span></div><span>›</span></div>
-      <div class="profile-menu-item" onclick="window.location.href='https://pay.cupx.in'"><div class="pmi-left"><span class="pmi-icon">💸</span><span class="pmi-label">CPay – Send / Request</span></div><span>›</span></div>
       <div class="profile-menu-item" onclick="window.location.href='https://auth.cupx.in'"><div class="pmi-left"><span class="pmi-icon">⚙️</span><span class="pmi-label">Account Settings</span></div><span>›</span></div>
+      <div class="profile-menu-item" onclick="window.location.href='https://cupx.in/privacy'" ><div class="pmi-left"><span class="pmi-icon">🔒</span><span class="pmi-label">Privacy Policy</span></div><span>›</span></div>
       <div class="profile-menu-item" onclick="logout()"><div class="pmi-left"><span class="pmi-icon">⎋</span><span class="pmi-label" style="color:var(--amz-red)">Sign Out</span></div><span>›</span></div>
     </div>
   </div>
@@ -810,7 +815,7 @@ function selectPayMethod(m){
 // ── QR GENERATION ──
 function buildQR(){
   const total=cart.reduce((s,c)=>s+parseFloat(c.product.price)*c.qty,0);
-  const refId='AMX-'+Date.now().toString(36).toUpperCase();
+  const refId='AMX-'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,3).toUpperCase();
   window._qrRef=refId;
   window._qrAmt=total;
   const payUrl=`https://pay.cupx.in?to=${encodeURIComponent(MERCHANT_UPI)}&amount=${total.toFixed(2)}&ref=${refId}&note=${encodeURIComponent('AmazX Order '+refId)}`;
@@ -916,7 +921,7 @@ function startUpiPoll(reqId,total,deliveryTime,orderIds,trackingId){
   },5000);
 }
 
-// ── POLLING: QR (watch transactions) ──
+// ── POLLING: QR (watch transactions by reference_id) ──
 function startQRPoll(refId,total){
   stopPolling();pollSeconds=0;
   const pollStart=new Date().toISOString();
@@ -924,13 +929,21 @@ function startQRPoll(refId,total){
   pollInterval=setInterval(async()=>{
     pollSeconds+=5;updatePollTimer();
     if(pollSeconds>=POLL_MAX){stopPolling();setPollStatus('expired');return;}
-    const{data}=await db.from('transactions')
+    // Match by reference_id (pay.cupx.in must write ref to transactions.reference_id)
+    // Also fallback: match by to_user + amount + time window to handle cases where ref isn't saved
+    const{data:byRef}=await db.from('transactions')
+      .select('id,status')
+      .eq('to_user',MERCHANT)
+      .eq('status','success')
+      .eq('reference_id',refId);
+    const{data:byAmt}=await db.from('transactions')
       .select('id,status')
       .eq('to_user',MERCHANT)
       .eq('amount',total)
       .eq('status','success')
       .gte('created_at',pollStart);
-    if(data&&data.length>0){
+    const match=(byRef&&byRef.length>0)?byRef:(byAmt&&byAmt.length>0)?byAmt:null;
+    if(match){
       stopPolling();setPollStatus('paid');
       const deliveryTime=randDelivery();
       const trackingId=genTID();
@@ -953,7 +966,7 @@ function startQRPoll(refId,total){
           tracking_id:trackingId,
           estimated_delivery:deliveryTime,
           delivery_address:fullAddr,
-          payment_id:data[0].id,
+          payment_id:match[0].id,
           created_at:new Date().toISOString()
         }]).select().single();
         if(ord)orderIds.push(ord.id);
@@ -964,17 +977,24 @@ function startQRPoll(refId,total){
 }
 
 async function finishOrder(total,deliveryTime,trackingId){
+  // Clear cart immediately before anything else
+  cart=[];
+  await saveCart();
+  updateCartBadge();
   await db.from('notifications').insert([{
     user:currentUser.username,title:'Order Confirmed! 🎉',
     message:`AmazX order ₹${total.toFixed(2)} confirmed. Track: ${trackingId}`,
     type:'order',is_read:false,created_at:new Date().toISOString()
   }]);
-  cart=[];saveCart();updateCartBadge();
   const{data}=await db.from('users').select('*').eq('id',currentUser.id).single();
   if(data){currentUser=data;localStorage.setItem('cupx_user',JSON.stringify(data));}
-  const eta=new Date(deliveryTime).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const estDate=new Date(deliveryTime);
+  const eta=estDate.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const etaDate=estDate.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  const mins=Math.round((estDate-Date.now())/60000);
+  const hrsLabel=mins>=60?Math.floor(mins/60)+'h '+(mins%60?mins%60+'m':''):mins+'m';
   document.getElementById('successAmt').textContent='₹'+fmtInr(total);
-  document.getElementById('successEta').textContent='🚚 Estimated delivery by '+eta+' today';
+  document.getElementById('successEta').textContent=`🚚 Delivery by ${eta}, ${etaDate} (in ~${hrsLabel})`;
   document.getElementById('successTracking').textContent='Tracking ID: '+trackingId;
   document.getElementById('successModal').classList.add('open');
 }
@@ -1026,9 +1046,11 @@ async function loadOrders(){
   document.getElementById('ordersList').innerHTML=data.map(o=>{
     const est=o.estimated_delivery?new Date(o.estimated_delivery):null;
     let os=o.order_status||'processing';
-    if(os!=='pending_payment'&&os!=='cancelled'){
-      if(est&&now>=est)os='delivered';
-      else if(est&&(est-now)<3600000)os='shipped';
+    // Only auto-progress status if order is paid and DB still shows older status
+    if(os==='processing'||os==='shipped'){
+      if(est&&now>=est) os='delivered';
+      else if(est&&(est-now)<3600000) os='shipped';
+      else os='processing';
     }
     const scls={pending_payment:'osb-pending-pay',processing:'osb-processing',shipped:'osb-shipped',delivered:'osb-delivered',cancelled:'osb-cancelled'}[os]||'osb-processing';
     const slbl={pending_payment:'Awaiting Payment',processing:'Processing',shipped:'Out for Delivery',delivered:'Delivered',cancelled:'Cancelled'}[os]||os;
@@ -1060,9 +1082,16 @@ async function openTracking(orderId){
   const now=new Date();
   const est=o.estimated_delivery?new Date(o.estimated_delivery):null;
   const isPending=o.order_status==='pending_payment';
-  const isDelivered=!isPending&&est&&now>=est;
-  const isShipped=!isPending&&!isDelivered&&est&&(est-now)<3600000;
-  const isProcessing=!isPending&&!isDelivered&&!isShipped;
+  const isCancelled=o.order_status==='cancelled';
+  let derivedStatus=o.order_status||'processing';
+  if(derivedStatus==='processing'||derivedStatus==='shipped'){
+    if(est&&now>=est) derivedStatus='delivered';
+    else if(est&&(est-now)<3600000) derivedStatus='shipped';
+    else derivedStatus='processing';
+  }
+  const isDelivered=!isPending&&!isCancelled&&derivedStatus==='delivered';
+  const isShipped=!isPending&&!isCancelled&&derivedStatus==='shipped';
+  const isProcessing=!isPending&&!isCancelled&&derivedStatus==='processing';
   document.getElementById('trackHeader').textContent=(o.tracking_id||'—')+' · '+o.product_name+' × '+(o.quantity||1);
   document.getElementById('trackAddr').textContent='📍 '+(o.delivery_address||'—');
   const steps=[
