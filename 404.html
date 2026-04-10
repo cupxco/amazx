@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | AmazX</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bitter:wght@700&display=swap');
+
+        :root {
+            --amz-orange: #FF9900;
+            --amz-navy: #131921;
+            --amz-bg: #EAEDED;
+            --amz-text: #0F1111;
+            --amz-link: #007185;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--amz-bg);
+            color: var(--amz-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .logo {
+            font-family: 'Bitter', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--amz-navy);
+            margin-bottom: 5px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .logo-smile {
+            display: block;
+            margin: 0 auto 25px;
+        }
+
+        .error-code {
+            font-size: 80px;
+            font-weight: 800;
+            color: var(--amz-orange);
+            line-height: 1;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 10px 0;
+        }
+
+        p {
+            color: #565959;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 44px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to bottom, #FFE033, #F0C14B);
+            border-color: #A88734;
+            color: var(--amz-text);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            border-color: #D5D9D9;
+            color: var(--amz-text);
+        }
+
+        .btn-outline {
+            background: var(--amz-navy);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .footer-cupx {
+            margin-top: 30px;
+            font-size: 11px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="https://amazx.cupx.in" class="logo">AmazX</a>
+    <svg class="logo-smile" width="70" height="15" viewBox="0 0 72 12">
+        <path d="M2 6Q18 12 36 9Q54 6 70 10" stroke="#FF9900" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <polygon points="66,8 72,10.5 67,13.5" fill="#FF9900"/>
+    </svg>
+
+    <div class="error-code">404</div>
+    <h1>Looking for something?</h1>
+    <p>We're sorry. The Web address you entered is not a functioning page on our site.</p>
+
+    <div class="btn-group">
+        <a href="javascript:history.back()" class="btn btn-primary">
+            ↩ Go Back
+        </a>
+        
+        <a href="https://amazx.cupx.in" class="btn btn-secondary">
+            🏠 Return to AmazX Home
+        </a>
+
+        <a href="https://cupx.in" class="btn btn-outline">
+            🌐 Visit CupX Corporation
+        </a>
+    </div>
+
+    <div class="footer-cupx">
+        © 2026 AmazX · A CupX Corporation Service
+    </div>
+</div>
+
+</body>
+</html>
